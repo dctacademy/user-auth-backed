@@ -1,3 +1,4 @@
+require('dotenv').config()
 const express = require('express')
 const cors = require('cors')
 const configureDB = require('./config/db')
@@ -11,7 +12,6 @@ configureDB()
 app.post('/api/users/register', usersCltr.register)
 app.post('/api/users/login', usersCltr.login)
 app.get('/api/users/account', usersCltr.account)
-
 
 
 app.listen(PORT, () => {

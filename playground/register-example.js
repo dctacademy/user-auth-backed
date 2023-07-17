@@ -1,5 +1,5 @@
 const bcrypt = require('bcryptjs')
-const userPassword = 'secret123'
+const userPassword = 'secret007'
 bcrypt.genSalt()
     .then((salt) => {
         console.log(salt, salt.length)
