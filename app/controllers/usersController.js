@@ -77,7 +77,7 @@ usersCltr.login = async (req, res) => {
             if(result) { // if password is valid 
                 // generate token and send the token 
                 const tokenData = {
-                    id: user._id
+                    _id: user._id
                 }
                 const token = jwt.sign(tokenData, process.env.JWT_SECRET)
                 res.json({
@@ -94,8 +94,13 @@ usersCltr.login = async (req, res) => {
     }   
 }
 
-usersCltr.account = (req, res) => {
-
+usersCltr.account = async (req, res) => {
+    try {
+        const user = await User.findById(req.user._id)
+        res.json(pick(user, ['_id', 'username', 'email']))
+    } catch(e) {
+        res.json(e)
+    }
 }
 
 module.exports = usersCltr 
