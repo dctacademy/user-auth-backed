@@ -33,10 +33,14 @@ usersCltr.register = async (req, res) => {
     try {
         // sanitize req.body
         const body = pick(req.body, ['username', 'email', 'password'])
-        // const { username, email, password } = req.body 
-        // const body = { username, email, password }
-       
+        
         const user = new User(body) 
+        const userCount = await User.countDocuments()
+
+        if (userCount == 0) {
+            user.role = 'admin'
+        } 
+
         const salt = await bcrypt.genSalt() 
         const hashedPassword = await bcrypt.hash(user.password, salt) 
         user.password = hashedPassword
@@ -47,27 +51,7 @@ usersCltr.register = async (req, res) => {
     }
 }
 
-// usersCltr.login = (req, res) => {
-//     const body = pick(req.body, ['email', 'password'])
-//     User.findOne({ email: body.email})  
-//         .then((user) => {
-//             if(user) {
-//                 bcrypt.compare(body.password, user.password) 
-//                     .then((result) => {
-//                         if(result) {
-//                             res.json(user) 
-//                         } else {
-//                             res.status(404).json({ errors: 'invalid email / password'})
-//                         }
-//                     })
-//             } else {
-//                 res.status(404).json({ errors: 'invalid email / password '})
-//             }
-//         })
-//         .catch((err) => {
-//             res.json(err)
-//         })
-// }
+
 usersCltr.login = async (req, res) => {
     try {
         const body = pick(req.body, ['email', 'password'])
@@ -77,7 +61,8 @@ usersCltr.login = async (req, res) => {
             if(result) { // if password is valid 
                 // generate token and send the token 
                 const tokenData = {
-                    _id: user._id
+                    _id: user._id,
+                    role: user.role
                 }
                 const token = jwt.sign(tokenData, process.env.JWT_SECRET)
                 res.json({
